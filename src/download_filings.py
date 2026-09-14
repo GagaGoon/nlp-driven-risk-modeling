@@ -46,7 +46,7 @@ def main():
     """Iterate over companies and forms, and output the results."""
     tickers = ['AAPL', 'MSFT', 'AMZN', 'JPM', 'XOM', 'JNJ', 'WMT', 'CAT', 'NEE', 'KO',
                'UPS', 'NVDA']
-    forms = ["10-K", "10-Q"]
+    forms = ["10-K", "10-Q", "10-K405"]
 
     project_dir = Path(__file__).resolve().parent.parent
     output_dir = project_dir / "data" / "raw"
@@ -78,7 +78,9 @@ def main():
         for i, filing in enumerate(filings):
             try:
                 status = download_filing(filing, ticker, output_dir)
-                registry.loc[i, "status"] = status
+                registry.loc[i, "status"] = ("downloaded" if status == "skipped" else 
+                                             status
+                                            )
                 print(ticker, filing.accession_no, status)
             except Exception as error:
                 registry.loc[i, "status"] = "error"
