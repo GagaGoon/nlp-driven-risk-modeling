@@ -19,7 +19,7 @@ def list_filings(ticker, forms):
 
 
 def download_filing(filing, ticker, output_dir):
-    """Download one filing and it's metadata."""
+    """Download one filing."""
     directory = output_dir / filing.form / ticker
     directory.mkdir(parents=True, exist_ok=True)
 
@@ -27,6 +27,7 @@ def download_filing(filing, ticker, output_dir):
         f"{filing.accession_no}.txt"
     )
 
+    # Skip previously saved filings when running the script again.
     if path.exists():
         return "skipped"
 
@@ -35,6 +36,8 @@ def download_filing(filing, ticker, output_dir):
     if not content:
         raise ValueError("Got empty file")
 
+    # Write to a temporary file first so an interrupted write does not
+    # leave an incomplete filing that would be treated as downloaded.
     temporary_path = path.with_suffix(".txt.part")
     temporary_path.write_text(content, encoding="utf-8")
     temporary_path.replace(path)
@@ -73,11 +76,14 @@ def main():
         registry_dir.mkdir(parents=True, exist_ok=True)
 
         registry_path = registry_dir / f"{ticker}.csv"
+        # Save the complete list of filings with pending status before downloading.
         registry.to_csv(registry_path, index=False)
 
         for i, filing in enumerate(filings):
             try:
                 status = download_filing(filing, ticker, output_dir)
+                # Existing files also count as downloaded: the registry tracks
+                # document availability, not the outcome of the current attempt.
                 registry.loc[i, "status"] = ("downloaded" if status == "skipped" else 
                                              status
                                             )
