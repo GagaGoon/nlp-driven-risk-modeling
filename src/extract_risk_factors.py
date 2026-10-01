@@ -48,13 +48,13 @@ def main():
     """Обработать скачанные подачи и сохранить результаты извлечения."""
     project_dir = Path(__file__).resolve().parent.parent
     raw_dir = project_dir / "data" / "raw"
-    registry_dir = project_dir / "data" / "indexes"
+    registry_dir = project_dir / "data" / "indexes" / "downloading"
     output_dir = project_dir / "data" / "interim" / "risk_factors"
 
     # Все документы читаются из файлов; повторная загрузка не требуется.
     use_local_storage(raw_dir, allow_network_fallback=False)
 
-    results_dir = registry_dir / "extraction"
+    results_dir = project_dir / "data" / "indexes" / "extraction"
     results_dir.mkdir(parents=True, exist_ok=True)
 
     for registry_path in sorted(registry_dir.glob("*.csv")):

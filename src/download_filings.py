@@ -66,13 +66,14 @@ def main():
                 "accession_number": filing.accession_no,
                 "form": filing.form,
                 "filing_date": filing.filing_date,
+                "period_ended": filing.report_date,
                 "status": "pending",
                 "error": "",
             }
             for filing in filings
         ])
 
-        registry_dir = project_dir / "data" / "indexes"
+        registry_dir = project_dir / "data" / "indexes" / "downloading"
         registry_dir.mkdir(parents=True, exist_ok=True)
 
         registry_path = registry_dir / f"{ticker}.csv"
